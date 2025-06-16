@@ -9,7 +9,7 @@ const app = express();
 
 app.use(express.json()); // allow to send json data to the server
 
-app.use("/api/user", userRoutes);
+app.use("/api/user/", userRoutes);
 
 console.log(process.env.MONGO_URI);
 
