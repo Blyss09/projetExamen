@@ -7,6 +7,7 @@ dotenv.config();
 
 const app = express();
 
+
 app.use(express.json()); // allow to send json data to the server
 
 app.use("/api/user/", userRoutes);
@@ -17,6 +18,9 @@ app.listen(5000, () => {
     connectDB();
     console.log("Server is running on port 5000");
 });
+
+
+
 
 
 

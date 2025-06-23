@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
 
+
 const userSchema = new mongoose.Schema({
     pseudo: {
         type: String,
@@ -36,6 +37,9 @@ const userSchema = new mongoose.Schema({
     timestamps: true,
 }
 );
+
+
+
 
 const UserModel = mongoose.model("Users", userSchema);
 
