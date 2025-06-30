@@ -11,6 +11,7 @@ export const signup = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing Fields" });
     }
 
+    // Vérification de la similarité des mdp
     if (password !== confirmPassword) {
       return res.status(400).json({ success: false, message: "Passwords not similar" });
     }
@@ -27,9 +28,11 @@ export const signup = async (req, res) => {
       return res.status(400).json({ success: false, message: "Pseudo already used" });
     }
 
+    // Salage du mot de passe 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Création de l'utilisateur si toute les vérification sont passées 
     const newUser = new User({ pseudo, email, password: hashedPassword });
     await newUser.save();
 

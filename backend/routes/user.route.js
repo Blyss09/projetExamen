@@ -24,7 +24,7 @@ router.put("/:id", updateUser);
 // Route DELETE pour supprimer un utilisateur (avec son ID)
 router.delete("/:id", deleteUser);
 
-router.get('/route-protegee', requireAuth, (req, res) => {
+router.get('/', requireAuth, (req, res) => {
   res.json({ message: "Accès autorisé !", user: req.user });
 });
 

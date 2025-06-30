@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/user.route.js";
+import gameRoutes from "./routes/game.route.js";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json()); // allow to send json data to the server
 
 app.use("/api/user/", userRoutes);
+app.use("/api/game/", gameRoutes);
 
 console.log(process.env.MONGO_URI);
 
