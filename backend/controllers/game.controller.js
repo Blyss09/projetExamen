@@ -9,11 +9,11 @@ class GameController {
             let players = [];
             let gameData = {};
             // Attribution du rôle et initialisation selon le type de jeu
-            if (gameType === "tic-tac-toe") {
+            if (gameType === "morpion") {
                 players = [{ user: req.user.id, role: morpionController.getPlayerRole(0) }];
                 gameData = morpionController.initializeGameData();
             } else {
-                // Pour d'autres jeux, à compléter
+                // Pour d'autres jeux
                 players = [{ user: req.user.id, role: "player" }];
                 gameData = {};
             }
@@ -27,7 +27,7 @@ class GameController {
             await game.save();
             res.json(game);
         } catch (err) {
-            res.status(500).json({ error: "Erreur serveur lors de la création de la partie." });
+            res.status(500).json({ error: "Erreur serveur lors de la création de la partie."});
         }
     }
 
@@ -47,7 +47,7 @@ class GameController {
             }
             // Attribution du rôle selon le type de jeu
             let role = "player";
-            if (game.gameType === "tic-tac-toe") {
+            if (game.gameType === "morpion") {
                 role = morpionController.getPlayerRole(game.players.length);
             }
             game.players.push({
@@ -83,7 +83,7 @@ class GameController {
             let applyMove = () => {};
             let checkGameEnd = () => ({ isFinished: false });
             let getNextPlayer = () => null;
-            if (game.gameType === "tic-tac-toe") {
+            if (game.gameType === "morpion") {
                 isPlayerTurn = morpionController.isPlayerTurn(game, req.user.id);
                 isValidMove = morpionController.isValidMove(game, move);
                 applyMove = () => morpionController.applyMove(game, move, req.user.id);

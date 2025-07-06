@@ -3,10 +3,16 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/user.route.js";
 import gameRoutes from "./routes/game.route.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+  }));
 
 
 app.use(express.json()); // allow to send json data to the server
