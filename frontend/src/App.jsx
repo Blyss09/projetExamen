@@ -5,6 +5,7 @@ import Games from "./screens/games/Games.jsx";
 import Ladder from "./screens/ladder/Ladder.jsx";
 import Home from "./screens/home/Home.jsx";
 import Login from "./screens/logIn/LogIn.jsx";
+import Pfc from "./screens/pierre-feuille-ciseau/Pfc.jsx";
 import { UserProvider } from "./contexts/userContexts.jsx";
 import 'boxicons/css/boxicons.min.css';
 import "./assets/resetCss/reset.css";
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/ladder" element={<Ladder />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/games/pfc" element={<Pfc />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </UserProvider>

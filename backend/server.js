@@ -4,6 +4,8 @@ import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/user.route.js";
 import gameRoutes from "./routes/game.route.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import { checkUser, requireAuth } from "./middleware/auth.middleware.js";
 
 dotenv.config();
 
@@ -14,8 +16,14 @@ app.use(cors({
     credentials: true
   }));
 
+  app.use(cookieParser());
+  app.use(express.json()); // allow to send json data to the server
 
-app.use(express.json()); // allow to send json data to the server
+  //JWT
+  app.use(checkUser);
+app.get('/jwtid', requireAuth, (req, res) => {
+    res.status(200).send(res.locals.userId)
+});
 
 app.use("/api/user/", userRoutes);
 app.use("/api/game/", gameRoutes);

@@ -1,16 +1,26 @@
 import { Link, useLocation, useNavigate} from "react-router-dom";
 import {useEffect } from 'react';
-import { useUser } from "../../contexts/userContexts.jsx";
+import { useUser } from "../../contexts/userContexts";
+import axios from "axios";
 import "./header.css";
+import logo from '../../assets/img/logo.jpg';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, setUser } = useUser();
+  const { user, logout } = useUser();
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate("/login")
+  const handleLogout = async () => {
+    try {
+      // Appeler une route de déconnexion côté serveur pour nettoyer le cookie
+      await axios.post("http://localhost:5000/api/user/logout", {}, { withCredentials: true });
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+    } finally {
+      // Nettoyer l'état local
+      logout();
+      navigate("/login");
+    }
   }
 
   useEffect(() => {
@@ -34,7 +44,7 @@ const Header = () => {
     <header>
       <div className="nav">
         <div className="logo">
-          <img src="./src/assets/img/logo.jpg" alt="logo site" />
+          <img src={logo} alt="logo site" />
         </div>
         <div className="navigationHeader">
           <ul id="navigation-content">

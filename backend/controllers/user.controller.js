@@ -1,6 +1,6 @@
 import User from "../models/users.model.js";
 import mongoose from "mongoose";
-
+import bcrypt from "bcrypt";
 
 export const getUser = async (req, res) => {
   try {
@@ -27,10 +27,9 @@ export const getUserById = async (req, res) => {
   }
 };
 
-
 export const updateUser = async (req, res) => {
   const { id } = req.params; // Récupération de l'ID depuis les paramètres de la requête
-  const user = req.body; // Récupération des données de mise à jour
+  const updateData = { ...req.body }; // Récupération des données de mise à jour
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     // Vérification de la validité de l'ID
@@ -38,9 +37,30 @@ export const updateUser = async (req, res) => {
   }
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, user, { new: true }); // Mise à jour de l'utilisateur
-    res.status(200).json({ success: true, data: updatedUser }); // Envoi de la réponse avec l'utilisateur mis à jour
+    // Si un nouveau mot de passe est fourni, le hasher
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    } else {
+      // Supprimer le champ password s'il n'est pas fourni
+      delete updateData.password;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id, 
+      updateData, 
+      { new: true, runValidators: true }
+    ); // Mise à jour de l'utilisateur
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Ne pas renvoyer le mot de passe
+    const { password, ...userWithoutPassword } = updatedUser.toObject();
+    res.status(200).json({ success: true, data: userWithoutPassword });
   } catch (error) {
+    console.error("Erreur lors de la mise à jour:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

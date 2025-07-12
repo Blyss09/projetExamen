@@ -1,79 +1,116 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../../contexts/userContexts";
+import axios from "axios";
 import "./profile.css";
 
 const UserProfile = () => {
-  const [user, setUser] = useState({
-    username: "",
+  const navigate = useNavigate();
+  const { user, loading, fetchUser } = useUser();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState({
+    pseudo: "",
     email: "",
     password: "",
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState({ ...user });
-
   useEffect(() => {
-    fetch("http://localhost/cool_games/public/setUser.php", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Erreur réseau');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.status === "success") {
-          setUser(data.user);
-          setEditedUser(data.user);
-        } else {
-          console.error("Erreur de l'API :", data.message);
-        }
-      })
-      .catch((error) => console.error("Erreur lors de la récupération des données utilisateur :", error));
-  }, []);
+    console.log("Profile component - user state:", user, "loading:", loading);
+    
+    // Ne rediriger que si le chargement est terminé et qu'il n'y a pas d'utilisateur
+    if (!loading && user === null) {
+      console.log("User is null and loading is finished, redirecting to login");
+      navigate('/login');
+      return;
+    }
+
+    // Si l'utilisateur est connecté, initialiser les données d'édition
+    if (user) {
+      setEditedUser({
+        pseudo: user.pseudo || "",
+        email: user.email || "",
+        password: "",
+      });
+    }
+  }, [user, loading, navigate]);
+
+  // Afficher un loader pendant le chargement
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '18px',
+        flexDirection: 'column',
+        gap: '20px'
+      }}>
+        <div>Chargement...</div>
+        <div style={{ fontSize: '14px', color: '#666' }}>
+          Vérification de votre session...
+        </div>
+      </div>
+    );
+  }
+
+  // Si l'utilisateur n'est pas connecté, ne rien afficher (la redirection se fera dans le useEffect)
+  if (user === null) {
+    return null;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedUser({ ...editedUser, [name]: value });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editedUser.email.includes('@')) {
       alert('Email invalide');
       return;
     }
-    if (editedUser.password.length < 6) {
+    if (editedUser.password && editedUser.password.length < 6) {
       alert('Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
 
-    fetch("http://localhost/cool_games/public/setUser.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(editedUser),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          setUser(editedUser);
-          setIsEditing(false);
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch((error) =>
-        console.error(
-          "Erreur lors de l'enregistrement des données utilisateur:",
-          error
-        )
+    try {
+      const updateData = {
+        pseudo: editedUser.pseudo,
+        email: editedUser.email,
+      };
+
+      // Ajouter le mot de passe seulement s'il a été modifié
+      if (editedUser.password) {
+        updateData.password = editedUser.password;
+      }
+
+      const response = await axios.put(
+        `http://localhost:5000/api/user/${user._id}`,
+        updateData,
+        { withCredentials: true }
       );
+
+      if (response.data.success) {
+        // Rafraîchir les données utilisateur
+        await fetchUser();
+        setIsEditing(false);
+        alert('Profil mis à jour avec succès !');
+      } else {
+        alert(response.data.message || 'Erreur lors de la mise à jour');
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement des données utilisateur:", error);
+      alert('Erreur lors de la mise à jour du profil');
+    }
   };
 
   const handleCancel = () => {
-    setEditedUser({ ...user });
+    setEditedUser({
+      pseudo: user.pseudo || "",
+      email: user.email || "",
+      password: "",
+    });
     setIsEditing(false);
   };
 
@@ -83,7 +120,7 @@ const UserProfile = () => {
       {!isEditing ? (
         <div>
           <p>
-            <strong>Nom d'utilisateur :</strong> {user.username}
+            <strong>Nom d'utilisateur :</strong> {user.pseudo}
           </p>
           <p>
             <strong>Email :</strong> {user.email}
@@ -91,7 +128,7 @@ const UserProfile = () => {
           <p>
             <strong>Mot de passe :</strong> ********
           </p>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
+          <button onClick={() => setIsEditing(true)}>Modifier</button>
         </div>
       ) : (
         <div>
@@ -99,8 +136,8 @@ const UserProfile = () => {
             Nom d'utilisateur:
             <input
               type="text"
-              name="username"
-              value={editedUser.username}
+              name="pseudo"
+              value={editedUser.pseudo}
               onChange={handleChange}
             />
           </label>
@@ -114,17 +151,18 @@ const UserProfile = () => {
             />
           </label>
           <label>
-            Mot de passe:
+            Nouveau mot de passe (optionnel):
             <input
               type="password"
               name="password"
               value={editedUser.password}
               onChange={handleChange}
+              placeholder="Laissez vide pour ne pas changer"
             />
           </label>
-          <button onClick={handleSave}>Save</button>
+          <button onClick={handleSave}>Enregistrer</button>
           <button className="cancel-btn" onClick={handleCancel}>
-            Cancel
+            Annuler
           </button>
         </div>
       )}

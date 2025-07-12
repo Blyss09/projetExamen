@@ -43,7 +43,7 @@ const GameCards = () => {
           <div className="face face2">
             <div className="content">
               <p className="text_game">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p>
-              <Link to="/games/shifumi">Jouer !</Link>
+              <Link to="/games/pfc">Jouer !</Link>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@ const GameCards = () => {
           <div className="face face2">
             <div className="content">
               <p className="text_game">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p>
-              <Link to="/games/shifumi">Jouer !</Link>
+              <Link to="/games/pfc">Jouer !</Link>
             </div>
           </div>
         </div>

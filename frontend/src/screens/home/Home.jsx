@@ -22,11 +22,6 @@ const Home = () => {
               <span className="front text">S'inscrire</span>
             </button>
           </div>
-          <button id="button-main" onClick={() => navigate("/games")}>
-            <span className="shadow"></span>
-            <span className="edge"></span>
-            <span className="front text"> Continuer en tant qu'invite </span>
-          </button>
         </div>
       </div>
     </main>

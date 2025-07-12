@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useUser } from "../../contexts/userContexts";
+import axios from "axios";
 import "./logIn.css";
 
 const Login = () => {
@@ -22,17 +22,30 @@ const Login = () => {
         { withCredentials: true }
       );
 
+      console.log("Réponse backend :", res.data);
+
       if (res.data.errors) {
         setErrorMessage(res.data.errors);
-      } else {
-        if (res.data.token) {
-          localStorage.setItem('token', res.data.token);
+      } else if (res.data.success) {
+        console.log("Connexion réussie, redirection...");
+        
+        // Mettre à jour l'état utilisateur
+        await fetchUser();
+        
+        // Stocker le nom d'utilisateur pour le chat
+        if (res.data.user) {
+          localStorage.setItem('username', res.data.user.pseudo || res.data.user.email);
         }
-        await fetchUser(); // Recharge les infos utilisateur
-        navigate("/games");
+        
+        // Petit délai pour s'assurer que l'état est mis à jour
+        setTimeout(() => {
+          navigate("/games");
+        }, 100);
+      } else {
+        setErrorMessage("Identifiants incorrects.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Erreur attrapée :", err);
       setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
     }
   };

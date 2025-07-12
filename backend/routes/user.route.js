@@ -1,7 +1,7 @@
 import express from "express";
 
 import { getUser, updateUser, deleteUser, getUserById } from '../controllers/user.controller.js';
-import { signup, login } from "../controllers/auth.controller.js";
+import { signup, login, logout } from "../controllers/auth.controller.js";
 import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
@@ -17,6 +17,9 @@ router.post("/signup", signup);
 
 // Route POST pour login l'utilisateur
 router.post("/login", login);
+
+// Route POST pour logout l'utilisateur
+router.post("/logout", logout);
 
 // Route PUT pour mettre à jour un utilisateur existant (avec son ID)
 router.put("/:id", updateUser);

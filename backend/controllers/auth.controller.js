@@ -65,12 +65,27 @@ export const login = async (req, res) => {
     // Génération du token JWT
     const token = jwt.sign(
       { id: user._id, pseudo: user.pseudo },
-      process.env.JWTOKEN, 
+      process.env.TOKEN_SECRET, 
       { expiresIn: "24h" }
     );
 
     const { password: _, ...userWithoutPassword } = user.toObject();
-    res.status(200).json({ success: true, token, user: userWithoutPassword });
+    res
+      .cookie('jwt', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }) // 24h
+      .status(200)
+      .json({ success: true, user: userWithoutPassword });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+// Déconnexion
+export const logout = async (req, res) => {
+  try {
+    res
+      .cookie('jwt', '', { httpOnly: true, maxAge: 1 }) // Supprimer le cookie
+      .status(200)
+      .json({ success: true, message: "Déconnexion réussie" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
