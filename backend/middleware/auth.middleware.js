@@ -29,8 +29,12 @@ export const requireAuth = (req, res, next) => {
                 console.log(err);
                 return res.status(401).json({ message: "Unauthorized" });
             } else {
-                console.log(decodedToken.id);
-                res.locals.userId = decodedToken.id;
+                // On va chercher l'utilisateur complet
+                const user = await UserModel.findById(decodedToken.id).select('-password');
+                if (!user) {
+                    return res.status(401).json({ message: "Utilisateur non trouvé" });
+                }
+                req.user = user; // On place l'utilisateur complet dans req.user
                 next();
             }
         });

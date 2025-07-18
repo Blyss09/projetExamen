@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const gameSchema = new Schema({
     gameType: {
       type: String,
-      enum: ['morpion', 'pendu', 'pierre-feuille-ciseaux'], 
+      enum: ['morpion', 'pendu', 'shifumi'], 
       required: true
     },
     status: {

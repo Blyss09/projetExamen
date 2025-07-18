@@ -1,51 +1,186 @@
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  overflow: hidden;
-}
-
 .shifumi-center {
-  height: calc(100vh - 100px);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-left: 180px;
-}
-
-.pfc-container {
-  background: none;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  margin: 0;
-  max-width: none;
-  min-height: 0;
+  justify-content: center;
+  min-height: 300px;
 }
 
 .shifumi-choices {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 48px;
+  gap: 20px;
+  margin-bottom: 10px;
 }
 
 .shifumi-btn {
-  background: none;
+  font-size: 2.5rem;
+  padding: 15px 25px;
   border: none;
-  box-shadow: none;
-  cursor: default;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 10px;
+  background: #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.shifumi-btn:disabled {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.shifumi-btn:hover:not(:disabled) {
+  background: #d1eaff;
+  transform: scale(1.08);
 }
 
 .shifumi-emoji {
-  font-size: 8rem;
-  line-height: 1;
-  color: #222;
+  font-size: 2.5rem;
+  display: block;
 }
+
+.shifumi-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.shifumi-header-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.shifumi-header-info {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.shifumi-header-scores {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+.shifumi-header-player {
+  text-align: center;
+}
+.shifumi-header-player-name {
+  font-weight: bold;
+  color: #007bff;
+}
+.shifumi-header-player-score {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.shifumi-final {
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  text-align: center;
+}
+.shifumi-final-title {
+  margin: 0 0 10px 0;
+}
+.shifumi-final-btn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.shifumi-final-btn:hover {
+  background-color: #218838;
+}
+
+.shifumi-waiting {
+  color: #666;
+  text-align: center;
+}
+.shifumi-waiting-choice {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.shifumi-history {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 500px;
+}
+.shifumi-history-title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+.shifumi-history-list {
+  font-size: 12px;
+}
+.shifumi-history-round {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+.shifumi-history-round:nth-child(even) {
+  background-color: white;
+}
+.shifumi-history-round-won {
+  font-weight: bold;
+  color: #28a745;
+}
+.shifumi-history-round-lost {
+  font-weight: bold;
+  color: #dc3545;
+}
+.shifumi-history-round-draw {
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.shifumi-leave-btn {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.shifumi-leave-btn:hover {
+  background-color: #495057;
+}
+
+.shifumi-input {
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.shifumi-input:focus {
+  border: 1.5px solid #007bff;
+}
+
+.shifumi-join-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.shifumi-join-btn:disabled {
+  background-color: #b3d7ff;
+  color: #eee;
+  cursor: not-allowed;
+}
+.shifumi-join-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+} 
