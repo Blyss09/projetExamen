@@ -14,7 +14,7 @@ const gameSchema = new Schema({
     },
     players: [{
       user: { type: Schema.Types.ObjectId, ref: 'User' },
-      role: String, // 'X', 'O' pour morpion, 'guesser' pour pendu
+      role: String, // 'X', 'O' pour morpion
       score: { type: Number, default: 0 }
     }],
     currentPlayer: { type: Schema.Types.ObjectId, ref: 'User' },

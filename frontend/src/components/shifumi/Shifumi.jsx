@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./shifumi.css";
 import { getShifumiSocket } from "../../services/socketShifumi";
+import { useUser } from "../../contexts/userContexts";
 
 const CHOICES = [
   { value: "pierre", emoji: "✊" },
@@ -9,6 +10,7 @@ const CHOICES = [
 ];
 
 const Shifumi = () => {
+  const { user } = useUser();
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [gameState, setGameState] = useState({
@@ -18,15 +20,12 @@ const Shifumi = () => {
     winner: null
   });
   const [roomId, setRoomId] = useState("");
-  const [userId, setUserId] = useState("");
   const [isInGame, setIsInGame] = useState(false);
   const [selectedMove, setSelectedMove] = useState("");
   const [waitingForOpponent, setWaitingForOpponent] = useState(false);
 
   // Initialisation socket.io
   useEffect(() => {
-    const tempUserId = `user_${Math.random().toString(36).substr(2, 9)}`;
-    setUserId(tempUserId);
     const s = getShifumiSocket();
     setSocket(s);
     setIsConnected(true);
@@ -55,17 +54,9 @@ const Shifumi = () => {
 
   // Rejoindre une partie
   const joinGame = () => {
-    if (!socket || !roomId || !userId) return;
-    socket.emit('shifumi:join', { roomId, userId });
+    if (!socket || !roomId || !user || !user._id) return;
+    socket.emit('shifumi:join', { roomId, userId: user._id });
     setIsInGame(true);
-  };
-
-  // Jouer un coup
-  const makeMove = (move) => {
-    if (!socket || !roomId || !userId || gameState.isFinished) return;
-    setSelectedMove(move);
-    setWaitingForOpponent(true);
-    socket.emit('shifumi:play', { roomId, userId, move });
   };
 
   // Nouvelle partie
@@ -96,11 +87,24 @@ const Shifumi = () => {
     setWaitingForOpponent(false);
   };
 
-  // Calculer le score
-  const getScore = () => {
+    // Jouer un coup
+    const makeMove = (move) => {
+      if (!socket || !roomId || !user || !user._id || gameState.isFinished) return;
+      setSelectedMove(move);
+      setWaitingForOpponent(true);
+      socket.emit('shifumi:play', { roomId, userId: user._id, move });
+    };
+
+  // Vérifier si le joueur a déjà joué
+  const hasPlayerPlayed = () => {
+    return gameState.gameData.choices[user && user._id] !== undefined;
+  };
+
+   // Calculer le score
+   const getScore = () => {
     const scores = {};
     gameState.players.forEach(player => {
-      scores[player] = 0;
+      scores[player.userId] = 0; // Utiliser player.userId
     });
     gameState.gameData.rounds.forEach(round => {
       if (round.winner) {
@@ -109,18 +113,7 @@ const Shifumi = () => {
     });
     return scores;
   };
-
-  // Vérifier si le joueur a déjà joué
-  const hasPlayerPlayed = () => {
-    return gameState.gameData.choices[userId] !== undefined;
-  };
-
-  // Obtenir le nom du joueur
-  const getPlayerName = (playerId) => {
-    if (playerId === userId) return 'Vous';
-    return 'Adversaire';
-  };
-
+  
   if (!isConnected) {
     return (
       <div className="shifumi-center">
@@ -171,7 +164,12 @@ const Shifumi = () => {
   }
 
   const scores = getScore();
-  const currentRound = gameState.gameData.rounds.length + 1;
+  let currentRound;
+  if (gameState.isFinished) {
+    currentRound = gameState.gameData.rounds.length;
+  } else {
+    currentRound = gameState.gameData.rounds.length + 1;
+  }
 
   return (
     <div className="shifumi-center">
@@ -182,12 +180,12 @@ const Shifumi = () => {
         </div>
         <div className="shifumi-header-scores">
           {gameState.players.map((player) => (
-            <div key={player} className="shifumi-header-player">
-              <div className={player === userId ? "shifumi-header-player-name" : undefined}>
-                {getPlayerName(player)}
+            <div key={player.userId} className="shifumi-header-player">
+              <div className={user && player.userId === user._id ? "shifumi-header-player-name" : undefined}>
+                {player.userId === user?._id ? 'Vous' : player.pseudo}
               </div>
               <div className="shifumi-header-player-score">
-                {scores[player] || 0}
+                {scores[player.userId] || 0}
               </div>
             </div>
           ))}
@@ -197,7 +195,7 @@ const Shifumi = () => {
       {gameState.isFinished && (
         <div className="shifumi-final">
           <h3 className="shifumi-final-title">
-            {gameState.winner === userId ? ' Vous avez gagné !' :
+            {user?._id === gameState.winner ? ' Vous avez gagné !' :
               gameState.winner ? ' Vous avez perdu...' :
                 ' Match nul !'}
           </h3>
@@ -225,7 +223,7 @@ const Shifumi = () => {
               <div className="shifumi-waiting">
                 En attente de l'adversaire...
                 <div className="shifumi-waiting-choice">
-                  Votre choix: {CHOICES.find(c => c.value === gameState.gameData.choices[userId])?.emoji}
+                  Votre choix: {CHOICES.find(c => c.value === gameState.gameData.choices[user?._id])?.emoji}
                 </div>
               </div>
             ) : (
@@ -254,20 +252,20 @@ const Shifumi = () => {
           <h4 className="shifumi-history-title">Historique</h4>
           <div className="shifumi-history-list">
             {gameState.gameData.rounds.map((round, index) => {
-              const opponentId = gameState.players.find(p => p !== userId);
+              const opponent = gameState.players.find(p => p.userId !== user?._id);
               return (
                 <div key={index} className="shifumi-history-round">
                   <div>Manche {index + 1}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span>{CHOICES.find(c => c.value === round.choices[userId])?.emoji}</span>
+                    <span>{CHOICES.find(c => c.value === round.choices[user?._id])?.emoji}</span>
                     <span>vs</span>
-                    <span>{CHOICES.find(c => c.value === round.choices[opponentId])?.emoji}</span>
+                    <span>{CHOICES.find(c => c.value === round.choices[opponent?.userId])?.emoji}</span>
                   </div>
                   <div className={
-                    round.winner === userId ? 'shifumi-history-round-won' :
+                    round.winner === user?._id ? 'shifumi-history-round-won' :
                       round.winner ? 'shifumi-history-round-lost' : 'shifumi-history-round-draw'
                   }>
-                    {round.winner === userId ? 'Gagné' :
+                    {round.winner === user?._id ? 'Gagné' :
                       round.winner ? 'Perdu' : 'Égalité'}
                   </div>
                 </div>

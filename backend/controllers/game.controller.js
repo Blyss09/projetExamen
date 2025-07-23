@@ -44,7 +44,7 @@ class GameController {
             if (!game) {
                 return res.status(404).json({ error: "Partie non trouvée" });
             }
-            // LOG DEBUG
+            // DEBUG
             console.log("Tentative de join par :", req.user._id.toString());
             console.log("Joueurs déjà dans la partie :", game.players.map(p => p.user.toString()));
             if (game.players.length >= game.maxPlayers) {
@@ -100,11 +100,9 @@ class GameController {
                 checkGameEnd = () => morpionController.checkGameEnd(game);
                 getNextPlayer = () => morpionController.getNextPlayer(game, req.user._id);
             } else if (game.gameType === "shifumi") {
-                isPlayerTurn = shifumiController.isPlayerTurn(game, req.user._id);
                 isValidMove = shifumiController.isValidMove(game, move);
                 applyMove = () => shifumiController.applyMove(game, move, req.user._id);
                 checkGameEnd = () => shifumiController.checkGameEnd(game);
-                getNextPlayer = () => shifumiController.getNextPlayer(game, req.user._id);
             }
             if (!isPlayerTurn) {
                 return res.status(400).json({ error: 'Pas votre tour' });
