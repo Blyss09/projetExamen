@@ -50,7 +50,7 @@ initShifumiSocket(io);
 // Démarrage du serveur
 server.listen(5000, () => {
     connectDB();
-    console.log("Server (avec socket.io) en écoute sur le port 5000");
+    console.log("Server socket.io en écoute sur le port 5000");
 });
 
 

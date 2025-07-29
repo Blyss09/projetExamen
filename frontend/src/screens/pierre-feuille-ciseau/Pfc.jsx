@@ -13,9 +13,9 @@ const Pfc = () => {
     useEffect(() => {
         console.log("Pfc component - user state:", user, "loading:", loading);
         
-        // Ne rediriger que si le chargement est terminé et qu'il n'y a pas d'utilisateur
+        // Ne redirige que si le chargement est terminé et qu'il n'y a pas d'utilisateur
         if (!loading && user === null) {
-            console.log("User is null and loading is finished, redirecting to login");
+            console.log("Aucun user redirection vers le login");
             navigate('/login');
         }
     }, [user, loading, navigate]);
@@ -40,7 +40,7 @@ const Pfc = () => {
         );
     }
 
-    // Si l'utilisateur n'est pas connecté, ne rien afficher (la redirection se fera dans le useEffect)
+    // Si l'utilisateur n'est pas connecté on le redirige au login
     if (user === null) {
         return null;
     }

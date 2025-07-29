@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/userContexts";
+import Header from '../../components/header/Header';
 import axios from "axios";
 import "./profile.css";
 
@@ -115,6 +116,8 @@ const UserProfile = () => {
   };
 
   return (
+    <>
+    <Header />
     <div className="user-profile">
       <h2>Profil de l'utilisateur</h2>
       {!isEditing ? (
@@ -167,6 +170,7 @@ const UserProfile = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

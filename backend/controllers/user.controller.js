@@ -5,9 +5,9 @@ import bcrypt from "bcrypt";
 export const getUser = async (req, res) => {
   try {
     const users = await User.find({}); // Recherche de tous les utilisateurs dans la base de données
-    res.status(200).json({ success: true, data: users }); // Envoi de la réponse avec les utilisateurs trouvés
+    res.status(200).json({ success: true, data: users }); 
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
